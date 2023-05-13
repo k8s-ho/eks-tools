@@ -5,8 +5,6 @@ GROUP_ID=$(aws ec2 describe-security-groups | jq -r '.SecurityGroups[] | select(
 
 OLD_CIDR=$(aws ec2 describe-security-groups --group-id $GROUP_ID | jq -r '.SecurityGroups[] | select(.Description == "eksctl-host Security Group").IpPermissions[].IpRanges[].CidrIp')
 
-#OLD_CIDR=$(aws ec2 describe-security-groups --group-id $GROUP_ID | jq -r '.SecurityGroups[].IpPermissions[].IpRanges[].CidrIp')
-
 NEW_CIDR=$(curl https://ipinfo.io/ip)/32
 
 RULE_ID=$(aws ec2 describe-security-group-rules --filters "Name=group-id,Values=$GROUP_ID" | jq -r '.SecurityGroupRules[] | select(.CidrIpv4 | startswith("'$OLD_CIDR'")).SecurityGroupRuleId')
