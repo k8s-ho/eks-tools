@@ -32,6 +32,7 @@ if [ $# -eq 2 ]; then
     --attach-policy-arn $(aws iam list-policies --query "Policies[?PolicyName=='$RCMD_POLICY'].Arn" --output text) \
     --override-existing-serviceaccounts --approve
 
+  kubectl -n $1 rollout restart deploy ack-$2-controller-$2-chart
   echo -e "\n[#] Done! Now, you can create AWS '$2' resources using ACK."
 else
   usage
