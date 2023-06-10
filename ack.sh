@@ -15,16 +15,16 @@ if [ $# -eq 2 ]; then
   CLUSTER_NAME=$(aws eks list-clusters --query "clusters[]" --output text)
   
 
-  echo -e "[+] Download ACK $2 Helm Chart & Checking Version\n"
+  echo -e "\n[+] Download ACK $2 Helm Chart & Checking Version"
   helm pull oci://public.ecr.aws/aws-controllers-k8s/$2-chart --version=$RELEASE_VERSION
   tar xzvf $2-chart-$RELEASE_VERSION.tgz
 
 
-  echo -e "[+] Install ACK helm chart\n"
+  echo -e "\n[+] Install ACK helm chart"
   helm install --create-namespace -n $1 ack-$2-controller --set aws.region="$AWS_REGION" ~/$2-chart
 
 
-  echo -e "[+] Create IRSA\n"
+  echo -e "\n[+] Create IRSA"
   eksctl create iamserviceaccount \
     --name ack-$2-controller \
     --namespace $1 \
@@ -32,7 +32,7 @@ if [ $# -eq 2 ]; then
     --attach-policy-arn $(aws iam list-policies --query "Policies[?PolicyName=='$RCMD_POLICY'].Arn" --output text) \
     --override-existing-serviceaccounts --approve
 
-  echo -e "[+] ACK Controller Pod restart to apply serviceaccount configuration\n"
+  echo -e "\n[+] ACK Controller Pod restart to apply serviceaccount configuration"
   kubectl -n $1 rollout restart deploy ack-$2-controller-$2-chart
   
   echo -e "\n[#] Done! Now, you can create AWS '$2' resources using ACK."
